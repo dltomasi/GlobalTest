@@ -1,7 +1,8 @@
-package com.global.test.globaltest
+package com.global.test.globaltest.ui
 
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
+import com.global.test.globaltest.R
 
 class MainActivity : AppCompatActivity() {
 

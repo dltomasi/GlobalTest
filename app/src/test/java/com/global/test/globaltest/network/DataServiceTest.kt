@@ -1,4 +1,4 @@
-package com.global.test.globaltest
+package com.global.test.globaltest.network
 
 import com.global.test.globaltest.network.DataService
 import com.global.test.globaltest.network.WebClient
@@ -21,7 +21,5 @@ class DataServiceTest {
         service.fetchPath().test()
             .assertValue { it.next_path != null }
     }
-
-
 
 }

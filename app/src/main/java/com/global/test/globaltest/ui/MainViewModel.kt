@@ -3,12 +3,11 @@ package com.global.test.globaltest.ui
 import android.databinding.Bindable
 import com.global.test.globaltest.backgroundSubscribe
 import com.global.test.globaltest.repositories.DataRepository
-import io.reactivex.Observable
+import com.global.test.globaltest.repositories.LocalRepository
 import io.reactivex.subjects.BehaviorSubject
-import io.reactivex.subjects.PublishSubject
-import java.util.concurrent.TimeUnit
 
-class MainViewModel(private val repository: DataRepository) : BaseViewModel() {
+class MainViewModel(private val dataRepository: DataRepository,
+                    private val localRepository: LocalRepository) : BaseViewModel() {
 
     var code: String? = null
         @Bindable set(value) {
@@ -22,7 +21,7 @@ class MainViewModel(private val repository: DataRepository) : BaseViewModel() {
             notifyChange()
         }
 
-    var timesCount = 0
+    private var timesCount = 0
         @Bindable set(value) {
             field = value
             times = Integer.toString(value)
@@ -31,12 +30,13 @@ class MainViewModel(private val repository: DataRepository) : BaseViewModel() {
     var error = BehaviorSubject.create<String>()
 
     init {
-        // get count and code from local
+        timesCount = localRepository.getTimes()
+        code = localRepository.getCode()
     }
 
     fun fetchCode() {
         addReaction(
-        repository.fetchPath()
+        dataRepository.fetchPath()
             .map { fetchCode(it.next_path) }
             .backgroundSubscribe()
             .doOnSubscribe { showProgress() }
@@ -48,7 +48,7 @@ class MainViewModel(private val repository: DataRepository) : BaseViewModel() {
     private fun fetchCode(nextPath: String?) {
         if (nextPath != null) {
             addReaction(
-            repository.fetchCode(nextPath)
+            dataRepository.fetchCode(nextPath)
                 .backgroundSubscribe()
                 .doOnSubscribe { showProgress() }
                 .doOnComplete { hideProgress() }
@@ -60,6 +60,7 @@ class MainViewModel(private val repository: DataRepository) : BaseViewModel() {
 
                     code = it.response_code
                     timesCount++
+                    localRepository.saveData(timesCount, code!!)
                 }
                 //.doOnError { e -> error = e.localizedMessage }
                 .subscribe({},

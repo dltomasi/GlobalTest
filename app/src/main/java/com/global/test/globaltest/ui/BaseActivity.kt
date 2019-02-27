@@ -40,7 +40,7 @@ open class BaseActivity<M : BaseViewModel, B : ViewDataBinding> : AppCompatActiv
         addContentView(progress, ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT))
         addReaction(viewModel.progressSubject
                 .uiSubscribe()
-                .subscribe({ show -> setProgress(show) }))
+                .subscribe { show -> setProgress(show) })
     }
 
     override fun onStop() {

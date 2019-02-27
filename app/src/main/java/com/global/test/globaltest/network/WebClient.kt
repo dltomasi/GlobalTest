@@ -10,7 +10,7 @@ import okhttp3.logging.HttpLoggingInterceptor
 class WebClient {
 
     companion object {
-        val host = "http://10.0.2.2:8000/"
+        const val host = "http://10.0.2.2:8000/"
     }
 
     private val retrofit: Retrofit

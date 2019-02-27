@@ -1,13 +1,14 @@
 package com.global.test.globaltest.ui
 
-import android.databinding.BaseObservable
 import android.databinding.Bindable
+import android.os.Build
+import android.support.annotation.RequiresApi
 import com.global.test.globaltest.backgroundSubscribe
 import com.global.test.globaltest.repositories.DataRepository
 
-class MainViewModel(private val repository: DataRepository) : BaseObservable() {
+class MainViewModel(private val repository: DataRepository) : BaseViewModel() {
 
-    var code: String = ""
+    var code: String? = ""
         @Bindable set(value) {
             field = value
             notifyChange()
@@ -29,25 +30,29 @@ class MainViewModel(private val repository: DataRepository) : BaseObservable() {
         // get count and code from local
     }
 
+    @RequiresApi(Build.VERSION_CODES.N)
     fun fetchCode() {
         repository.fetchPath()
             .map { fetchCode(it.next_path) }
             .backgroundSubscribe()
-            .subscribe(
-                { },
-                { e -> e.printStackTrace() })
+            .doOnSubscribe { showProgress() }
+            .doOnComplete { hideProgress() }
+            .doOnError { e -> e.printStackTrace() }
+            .subscribe()
     }
 
     private fun fetchCode(nextPath: String?) {
         if (nextPath != null) {
             repository.fetchCode(nextPath)
                 .backgroundSubscribe()
-                .subscribe(
-                    {
-                        code = it.response_code!!
-                        timesCount++
-                    },
-                    { e -> e.printStackTrace() })
+                .doOnSubscribe { showProgress() }
+                .doOnComplete { hideProgress() }
+                .doOnNext {
+                    code = it.response_code
+                    timesCount++
+                }
+                .doOnError { e -> e.printStackTrace() }
+                .subscribe()
         }
     }
 }

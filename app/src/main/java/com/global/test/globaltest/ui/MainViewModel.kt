@@ -1,14 +1,16 @@
 package com.global.test.globaltest.ui
 
 import android.databinding.Bindable
-import android.os.Build
-import android.support.annotation.RequiresApi
 import com.global.test.globaltest.backgroundSubscribe
 import com.global.test.globaltest.repositories.DataRepository
+import io.reactivex.Observable
+import io.reactivex.subjects.BehaviorSubject
+import io.reactivex.subjects.PublishSubject
+import java.util.concurrent.TimeUnit
 
 class MainViewModel(private val repository: DataRepository) : BaseViewModel() {
 
-    var code: String? = ""
+    var code: String? = null
         @Bindable set(value) {
             field = value
             notifyChange()
@@ -26,33 +28,51 @@ class MainViewModel(private val repository: DataRepository) : BaseViewModel() {
             times = Integer.toString(value)
         }
 
+    var error = BehaviorSubject.create<String>()
+
     init {
         // get count and code from local
     }
 
-    @RequiresApi(Build.VERSION_CODES.N)
     fun fetchCode() {
+        addReaction(
         repository.fetchPath()
             .map { fetchCode(it.next_path) }
             .backgroundSubscribe()
             .doOnSubscribe { showProgress() }
             .doOnComplete { hideProgress() }
-            .doOnError { e -> e.printStackTrace() }
-            .subscribe()
+            .subscribe({},
+                { e -> handleError(e) }))
     }
 
     private fun fetchCode(nextPath: String?) {
         if (nextPath != null) {
+            addReaction(
             repository.fetchCode(nextPath)
                 .backgroundSubscribe()
                 .doOnSubscribe { showProgress() }
                 .doOnComplete { hideProgress() }
                 .doOnNext {
+                    if (!it.isSuccess()) {
+                        handleError(it.error!!)
+                        return@doOnNext
+                    }
+
                     code = it.response_code
                     timesCount++
                 }
-                .doOnError { e -> e.printStackTrace() }
-                .subscribe()
+                //.doOnError { e -> error = e.localizedMessage }
+                .subscribe({},
+                    { e -> handleError(e) }))
         }
+    }
+
+    private fun handleError(e: Throwable) {
+        handleError(e.localizedMessage)
+    }
+
+    private fun handleError(message: String) {
+        hideProgress()
+        error.onNext(message)
     }
 }

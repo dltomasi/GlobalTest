@@ -4,4 +4,8 @@ open class Response {
 
     var error : String? = null
 
+    fun isSuccess() : Boolean {
+        return error == null
+    }
+
 }

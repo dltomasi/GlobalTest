@@ -47,6 +47,7 @@ open class BaseActivity<M : BaseViewModel, B : ViewDataBinding> : AppCompatActiv
         super.onStop()
         // clear all the subscriptions
         disposable.clear()
+        viewModel.onStop()
     }
 
     protected fun setProgress(show: Boolean) {

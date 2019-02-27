@@ -2,6 +2,13 @@
 
 <layout xmlns:android="http://schemas.android.com/apk/res/android">
 
+    <data>
+        <import type="java.lang.Integer" />
+        <variable
+                name="viewmodel"
+                type="com.global.test.globaltest.ui.MainViewModel"/>
+    </data>
+
     <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
@@ -21,6 +28,7 @@
 
             <TextView
                     android:id="@+id/response_code"
+                    android:text="@={viewmodel.code}"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"/>
         </LinearLayout>
@@ -38,6 +46,7 @@
 
             <TextView
                     android:id="@+id/times_fetched"
+                    android:text="@={viewmodel.times}"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"/>
 
@@ -49,7 +58,8 @@
                 android:layout_marginTop="40dp"
                 android:layout_gravity="center"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"/>
+                android:layout_height="wrap_content"
+                android:onClick="@{() -> viewmodel.fetchCode()}"/>
 
     </LinearLayout>
 </layout>

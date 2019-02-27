@@ -25,7 +25,7 @@ class MainViewModelTest {
     }
 
     @Test fun fetchCode_success() {
-        // prepare
+        // arrange
         `when`(repository.fetchPath()).thenReturn(Observable.just(PathData("path")))
         `when`(repository.fetchCode("path")).thenReturn(Observable.just(CodeData("path", "code")))
 

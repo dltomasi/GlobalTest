@@ -9,7 +9,12 @@ import okhttp3.logging.HttpLoggingInterceptor
 
 class WebClient {
 
+    companion object {
+        val host = "http://10.0.2.2:8000/"
+    }
+
     private val retrofit: Retrofit
+
 
     init {
         val interceptor = HttpLoggingInterceptor()
@@ -17,7 +22,7 @@ class WebClient {
         val client = OkHttpClient.Builder().addInterceptor(interceptor).build()
 
         retrofit = Retrofit.Builder()
-            .baseUrl("http://localhost:8000/")
+            .baseUrl(host)
             .client(client)
             .addConverterFactory(GsonConverterFactory.create())
             .addCallAdapterFactory(RxJava2CallAdapterFactory.create())

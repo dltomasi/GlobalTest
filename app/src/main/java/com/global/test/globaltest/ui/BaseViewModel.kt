@@ -1,11 +1,12 @@
 package com.global.test.globaltest.ui
 
+import android.arch.lifecycle.ViewModel
 import android.databinding.BaseObservable
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.disposables.Disposable
 import io.reactivex.subjects.PublishSubject
 
-open class BaseViewModel : BaseObservable() {
+open class BaseViewModel : ViewModel() {
 
     private val disposable = CompositeDisposable()
 

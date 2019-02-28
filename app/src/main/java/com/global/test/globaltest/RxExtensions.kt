@@ -14,7 +14,3 @@ fun <T> Observable<T>.uiSubscribe(): Observable<T> {
 fun <T> Observable<T>.backgroundSubscribe(): Observable<T> {
     return subscribeOn(Schedulers.io()).observeOn(Schedulers.io())
 }
-
-fun Completable.uiSubscribe(): Completable {
-    return subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread())
-}

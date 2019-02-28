@@ -1,5 +1,6 @@
 package com.global.test.globaltest.ui
 
+import android.arch.lifecycle.Observer
 import android.content.Context
 import android.os.Bundle
 import android.widget.Toast
@@ -18,6 +19,25 @@ class MainActivity : BaseActivity<MainViewModel, ActivityMainBinding>() {
 
         viewModel = MainViewModel(DataRepositoryImpl(WebClient().dataService()), SharedPreferencesRepository(getPreferences(Context.MODE_PRIVATE)))
         viewBinding.viewmodel = viewModel
+
+        codeObserver()
+        timesObserver()
+    }
+
+    private fun codeObserver() {
+        val codeObserver = Observer<String> { code ->
+            viewBinding.responseCode.text = code
+        }
+
+        viewModel.code.observe(this, codeObserver)
+    }
+
+    private fun timesObserver() {
+        val timesObserver = Observer<Int> { times ->
+            viewBinding.timesFetched.text = times.toString()
+        }
+
+        viewModel.timesFetched.observe(this, timesObserver)
     }
 
     override fun onStart() {

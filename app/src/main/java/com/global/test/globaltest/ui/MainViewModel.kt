@@ -1,70 +1,79 @@
 package com.global.test.globaltest.ui
 
-import android.databinding.Bindable
+import android.arch.lifecycle.MutableLiveData
 import com.global.test.globaltest.backgroundSubscribe
 import com.global.test.globaltest.repositories.DataRepository
 import com.global.test.globaltest.repositories.LocalRepository
+import com.global.test.globaltest.uiSubscribe
 import io.reactivex.subjects.BehaviorSubject
 
-class MainViewModel(private val dataRepository: DataRepository,
-                    private val localRepository: LocalRepository) : BaseViewModel() {
+class MainViewModel(
+    private val dataRepository: DataRepository,
+    private val localRepository: LocalRepository
+) : BaseViewModel() {
 
-    var code: String? = null
-        @Bindable set(value) {
-            field = value
-            notifyChange()
-        }
+    val code: MutableLiveData<String> by lazy {
+        MutableLiveData<String>()
+    }
 
-    var times: String = "0"
-        @Bindable set(value) {
-            field = value
-            notifyChange()
-        }
+    val timesFetched: MutableLiveData<Int> by lazy {
+        MutableLiveData<Int>()
+    }
 
-    private var timesCount = 0
-        @Bindable set(value) {
-            field = value
-            times = Integer.toString(value)
-        }
 
     var error = BehaviorSubject.create<String>()
 
     init {
-        timesCount = localRepository.getTimes()
-        code = localRepository.getCode()
+        timesFetched.value = localRepository.getTimes()
+        code.value = localRepository.getCode()
     }
 
     fun fetchCode() {
         addReaction(
-        dataRepository.fetchPath()
-            .map { fetchCode(it.next_path) }
-            .backgroundSubscribe()
-            .doOnSubscribe { showProgress() }
-            .doOnComplete { hideProgress() }
-            .subscribe({},
-                { e -> handleError(e) }))
+            dataRepository.fetchPath()
+                .map { fetchCode(it.next_path) }
+                .backgroundSubscribe()
+                .doOnSubscribe { showProgress() }
+                .doOnComplete { hideProgress() }
+                .subscribe({},
+                    { e -> handleError(e) })
+        )
     }
 
     private fun fetchCode(nextPath: String?) {
         if (nextPath != null) {
             addReaction(
-            dataRepository.fetchCode(nextPath)
-                .backgroundSubscribe()
-                .doOnSubscribe { showProgress() }
-                .doOnComplete { hideProgress() }
-                .doOnNext {
-                    if (!it.isSuccess()) {
-                        handleError(it.error!!)
-                        return@doOnNext
-                    }
+                dataRepository.fetchCode(nextPath)
+                    .uiSubscribe()
+                    .doOnSubscribe { showProgress() }
+                    .doOnComplete { hideProgress() }
+                   /* .doOnNext {
+                        if (!it.isSuccess()) {
+                            handleError(it.error!!)
+                            return@doOnNext
+                        }
 
-                    code = it.response_code
-                    timesCount++
-                    localRepository.saveData(timesCount, code!!)
-                }
-                //.doOnError { e -> error = e.localizedMessage }
-                .subscribe({},
-                    { e -> handleError(e) }))
+                        code.value = it.response_code
+                        timesFetched.value = timesFetched.value?.plus(1)
+                        if (code.value != null) {
+                            localRepository.saveData(timesFetched.value!!, code.value!!)
+                        }
+                    }*/
+                    //.doOnError { e -> error = e.localizedMessage }
+                    .subscribe({
+                        if (!it.isSuccess()) {
+                            handleError(it.error!!)
+                            return@subscribe
+                        }
+
+                        code.value = it.response_code
+                        timesFetched.value = timesFetched.value?.plus(1)
+                        if (code.value != null) {
+                            localRepository.saveData(timesFetched.value!!, code.value!!)
+                        }
+                    },
+                        { e -> handleError(e) })
+            )
         }
     }
 

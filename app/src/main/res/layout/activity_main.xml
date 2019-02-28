@@ -28,7 +28,6 @@
 
             <TextView
                     android:id="@+id/response_code"
-                    android:text="@={viewmodel.code}"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"/>
         </LinearLayout>
@@ -46,7 +45,6 @@
 
             <TextView
                     android:id="@+id/times_fetched"
-                    android:text="@={viewmodel.times}"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"/>
 

@@ -15,11 +15,18 @@ import org.junit.Rule
 import org.junit.Test
 import org.mockito.*
 import org.mockito.Mockito.`when`
+import android.arch.core.executor.testing.InstantTaskExecutorRule
+import org.junit.rules.TestRule
+
+
 
 class MainViewModelTest {
 
     @Rule
     @JvmField var testSchedulerRule = RxImmediateSchedulerRule()
+
+    @Rule
+    @JvmField var rule: TestRule = InstantTaskExecutorRule()
 
     private lateinit var viewModel: MainViewModel
 
@@ -40,7 +47,7 @@ class MainViewModelTest {
         viewModel.fetchCode()
 
         // assert
-        assertEquals("code", viewModel.code)
+        assertEquals("code", viewModel.code.value)
     }
 
     @Test fun fetchPath_error_should_set_error() {
@@ -51,7 +58,7 @@ class MainViewModelTest {
         viewModel.fetchCode()
 
         // assert
-        assertNull(viewModel.code)
+        assertNull(viewModel.code.value)
         assertEquals("path_error", viewModel.error.value)
     }
 
@@ -64,7 +71,7 @@ class MainViewModelTest {
         viewModel.fetchCode()
 
         // assert
-        assertNull(viewModel.code)
+        assertNull(viewModel.code.value)
         assertEquals("code_error", viewModel.error.value)
     }
 

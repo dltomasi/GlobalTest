@@ -1,22 +1,24 @@
 
 package com.global.test.globaltest.ui
 
+import android.arch.core.executor.testing.InstantTaskExecutorRule
 import com.global.test.globaltest.RxImmediateSchedulerRule
 import com.global.test.globaltest.model.CodeData
 import com.global.test.globaltest.model.PathData
+import com.global.test.globaltest.network.WebClient
 import com.global.test.globaltest.repositories.DataRepository
 import com.global.test.globaltest.repositories.LocalRepository
 import io.reactivex.Observable
-import org.junit.Assert.*
+import org.junit.Assert.assertEquals
+import org.junit.Assert.assertNull
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
-import org.mockito.*
-import org.mockito.Mockito.`when`
-import android.arch.core.executor.testing.InstantTaskExecutorRule
-import android.content.SharedPreferences
-import com.global.test.globaltest.network.WebClient
 import org.junit.rules.TestRule
+import org.mockito.Mock
+import org.mockito.Mockito
+import org.mockito.Mockito.`when`
+import org.mockito.MockitoAnnotations
 
 
 class MainViewModelTest {
@@ -105,17 +107,4 @@ class MainViewModelTest {
         assertEquals("code", viewModel.code.value)
     }
 
-    @Test fun fetcCode_should_use_progress() {
-        // arrange
-        `when`(repository.fetchPath()).thenReturn(Observable.just(PathData("path")))
-        `when`(repository.fetchCode("path")).thenReturn(Observable.just(CodeData("path", "code")))
-
-        val spy = Mockito.spy(viewModel)
-        // act
-        viewModel.fetchCode()
-
-        // assert
-        Mockito.verify<MainViewModel>(spy).showProgress()
-        Mockito.verify<MainViewModel>(spy).hideProgress()
-    }
 }

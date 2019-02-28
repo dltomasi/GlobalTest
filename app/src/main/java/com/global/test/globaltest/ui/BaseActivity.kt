@@ -13,12 +13,13 @@ import android.widget.ProgressBar
 import com.global.test.globaltest.uiSubscribe
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.disposables.Disposable
+import javax.inject.Inject
 
 open class BaseActivity<M : BaseViewModel, B : ViewDataBinding> : AppCompatActivity() {
 
     private val disposable = CompositeDisposable()
     protected lateinit var progress: ProgressBar
-    protected lateinit var viewModel: M
+    @Inject protected lateinit var viewModel: M
     protected lateinit var viewBinding: B
 
     protected fun createViewBinding(activity: Activity, @LayoutRes layoutRes: Int) {

@@ -6,8 +6,6 @@ import com.global.test.globaltest.model.CodeData
 import com.global.test.globaltest.model.PathData
 import com.global.test.globaltest.repositories.DataRepository
 import com.global.test.globaltest.repositories.LocalRepository
-import com.global.test.globaltest.ui.MainViewModel
-import com.nhaarman.mockito_kotlin.capture
 import io.reactivex.Observable
 import org.junit.Assert.*
 import org.junit.Before
@@ -16,8 +14,9 @@ import org.junit.Test
 import org.mockito.*
 import org.mockito.Mockito.`when`
 import android.arch.core.executor.testing.InstantTaskExecutorRule
+import android.content.SharedPreferences
+import com.global.test.globaltest.network.WebClient
 import org.junit.rules.TestRule
-
 
 
 class MainViewModelTest {
@@ -91,5 +90,32 @@ class MainViewModelTest {
         // assert
         Mockito.verify<LocalRepository>(localRepository).getCode()
         Mockito.verify<LocalRepository>(localRepository).getTimes()
+    }
+
+    @Test fun should_format_path() {
+        // arrange
+        val nextPath = WebClient.host + "path"
+        `when`(repository.fetchPath()).thenReturn(Observable.just(PathData(nextPath)))
+        `when`(repository.fetchCode("path")).thenReturn(Observable.just(CodeData("path", "code")))
+
+        // act
+        viewModel.fetchCode()
+
+        // assert
+        assertEquals("code", viewModel.code.value)
+    }
+
+    @Test fun fetcCode_should_use_progress() {
+        // arrange
+        `when`(repository.fetchPath()).thenReturn(Observable.just(PathData("path")))
+        `when`(repository.fetchCode("path")).thenReturn(Observable.just(CodeData("path", "code")))
+
+        val spy = Mockito.spy(viewModel)
+        // act
+        viewModel.fetchCode()
+
+        // assert
+        Mockito.verify<MainViewModel>(spy).showProgress()
+        Mockito.verify<MainViewModel>(spy).hideProgress()
     }
 }

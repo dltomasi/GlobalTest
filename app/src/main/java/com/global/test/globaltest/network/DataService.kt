@@ -12,6 +12,6 @@ interface DataService {
     fun fetchPath() : Observable<PathData>
 
     @GET("{nextPath}")
-    fun fetchCode(@Path("nextPath", encoded = false) nextPath : String) : Observable<CodeData>
+    fun fetchCode(@Path("nextPath", encoded = false) nextPath: String?) : Observable<CodeData>
 
 }

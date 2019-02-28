@@ -54,5 +54,15 @@
                 android:layout_height="wrap_content"
                 android:onClick="@{() -> viewmodel.fetchCode()}"/>
 
+
+        <CheckBox
+                android:id="@+id/delayCheckBox"
+                android:text="@string/add_delay"
+                android:layout_gravity="center"
+                android:layout_marginTop="20dp"
+                android:onCheckedChanged="@{(v, c) -> viewmodel.setDelay(c)}"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+
     </LinearLayout>
 </layout>

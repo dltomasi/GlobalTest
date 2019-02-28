@@ -2,10 +2,13 @@ package com.global.test.globaltest.ui
 
 import android.arch.lifecycle.MutableLiveData
 import com.global.test.globaltest.backgroundSubscribe
+import com.global.test.globaltest.network.WebClient
 import com.global.test.globaltest.repositories.DataRepository
 import com.global.test.globaltest.repositories.LocalRepository
 import com.global.test.globaltest.uiSubscribe
+import io.reactivex.schedulers.Schedulers
 import io.reactivex.subjects.BehaviorSubject
+import java.util.concurrent.TimeUnit
 
 class MainViewModel(
     private val dataRepository: DataRepository,
@@ -20,8 +23,9 @@ class MainViewModel(
         MutableLiveData<Int>()
     }
 
-
     var error = BehaviorSubject.create<String>()
+
+    var delay = false
 
     init {
         timesFetched.value = localRepository.getTimes()
@@ -34,7 +38,6 @@ class MainViewModel(
                 .map { fetchCode(it.next_path) }
                 .backgroundSubscribe()
                 .doOnSubscribe { showProgress() }
-                .doOnComplete { hideProgress() }
                 .subscribe({},
                     { e -> handleError(e) })
         )
@@ -43,23 +46,10 @@ class MainViewModel(
     private fun fetchCode(nextPath: String?) {
         if (nextPath != null) {
             addReaction(
-                dataRepository.fetchCode(nextPath)
+                dataRepository.fetchCode(getPath(nextPath))
                     .uiSubscribe()
-                    .doOnSubscribe { showProgress() }
+                    .delay(if (delay) 3L else 0, TimeUnit.SECONDS, Schedulers.trampoline())
                     .doOnComplete { hideProgress() }
-                   /* .doOnNext {
-                        if (!it.isSuccess()) {
-                            handleError(it.error!!)
-                            return@doOnNext
-                        }
-
-                        code.value = it.response_code
-                        timesFetched.value = timesFetched.value?.plus(1)
-                        if (code.value != null) {
-                            localRepository.saveData(timesFetched.value!!, code.value!!)
-                        }
-                    }*/
-                    //.doOnError { e -> error = e.localizedMessage }
                     .subscribe({
                         if (!it.isSuccess()) {
                             handleError(it.error!!)
@@ -84,5 +74,13 @@ class MainViewModel(
     private fun handleError(message: String) {
         hideProgress()
         error.onNext(message)
+    }
+
+    private fun getPath(path: String?): String? {
+        return path?.let {
+            if (it.startsWith(WebClient.host)) {
+                    it.substring(WebClient.host.length, it.length)
+            } else it
+        }
     }
 }

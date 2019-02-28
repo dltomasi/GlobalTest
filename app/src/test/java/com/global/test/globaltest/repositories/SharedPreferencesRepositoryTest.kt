@@ -27,7 +27,7 @@ class SharedPreferencesRepositoryTest {
     }
 
     @Test
-    fun should_fetch_path_success() {
+    fun save_data_should_call_put_values() {
         // arrange
         `when`(sharedPreferences.edit()).thenReturn(editor)
         `when`(editor.putInt(ArgumentMatchers.anyString(), ArgumentMatchers.anyInt())).thenReturn(editor)
@@ -42,7 +42,7 @@ class SharedPreferencesRepositoryTest {
     }
 
     @Test
-    fun get_times_success() {
+    fun get_times_should_call_get_method() {
         // act
         repository.getTimes()
 
@@ -51,7 +51,7 @@ class SharedPreferencesRepositoryTest {
     }
 
     @Test
-    fun get_code_success() {
+    fun get_code_should_call_get_method() {
         // act
         repository.getCode()
 

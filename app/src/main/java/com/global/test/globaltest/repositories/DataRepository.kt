@@ -8,5 +8,5 @@ interface DataRepository {
 
     fun fetchPath(): Observable<PathData>
 
-    fun fetchCode(path: String): Observable<CodeData>
+    fun fetchCode(path: String?): Observable<CodeData>
 }

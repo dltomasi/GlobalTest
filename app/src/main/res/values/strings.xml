@@ -3,4 +3,5 @@
     <string name="response_code">Response Code:</string>
     <string name="times_fetched">Times Fetched:</string>
     <string name="fetch_content">Fetch Content</string>
+    <string name="add_delay">Add delay 3s</string>
 </resources>

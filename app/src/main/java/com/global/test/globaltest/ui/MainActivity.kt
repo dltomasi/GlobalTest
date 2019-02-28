@@ -20,6 +20,22 @@ class MainActivity : BaseActivity<MainViewModel, ActivityMainBinding>() {
         viewModel = MainViewModel(DataRepositoryImpl(WebClient().dataService()), SharedPreferencesRepository(getPreferences(Context.MODE_PRIVATE)))
         viewBinding.viewmodel = viewModel
 
+        addObservers()
+    }
+
+    override fun onStart() {
+        super.onStart()
+
+        addReaction(viewModel.error
+            .uiSubscribe()
+            .subscribe {
+                if (it != null) {
+                    Toast.makeText(baseContext, it, Toast.LENGTH_SHORT).show()
+                }
+            })
+    }
+
+    private fun addObservers() {
         codeObserver()
         timesObserver()
     }
@@ -38,17 +54,5 @@ class MainActivity : BaseActivity<MainViewModel, ActivityMainBinding>() {
         }
 
         viewModel.timesFetched.observe(this, timesObserver)
-    }
-
-    override fun onStart() {
-        super.onStart()
-
-        addReaction(viewModel.error
-            .uiSubscribe()
-            .subscribe {
-                if (it != null) {
-                    Toast.makeText(baseContext, it, Toast.LENGTH_SHORT).show()
-                }
-            })
     }
 }

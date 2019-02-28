@@ -3,7 +3,7 @@
 <layout xmlns:android="http://schemas.android.com/apk/res/android">
 
     <data>
-        <import type="java.lang.Integer" />
+        <import type="java.lang.Integer"/>
         <variable
                 name="viewmodel"
                 type="com.global.test.globaltest.ui.MainViewModel"/>
@@ -16,21 +16,15 @@
             android:orientation="vertical"
             android:layout_margin="40dp">
 
-        <LinearLayout
-                android:layout_width="match_parent"
+        <TextView
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal">
+                android:text="@string/response_code"/>
 
-            <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Response Code:"/>
-
-            <TextView
-                    android:id="@+id/response_code"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"/>
-        </LinearLayout>
+        <TextView
+                android:id="@+id/response_code"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
 
         <LinearLayout
                 android:layout_width="match_parent"
@@ -39,12 +33,13 @@
                 android:orientation="horizontal">
 
             <TextView
-                    android:text="Times Fetched:"
+                    android:text="@string/times_fetched"
                     android:layout_width="96dp"
                     android:layout_height="wrap_content"/>
 
             <TextView
                     android:id="@+id/times_fetched"
+                    android:layout_marginStart="4dp"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"/>
 
@@ -52,7 +47,7 @@
 
         <Button
                 android:id="@+id/button"
-                android:text="Fetch Content"
+                android:text="@string/fetch_content"
                 android:layout_marginTop="40dp"
                 android:layout_gravity="center"
                 android:layout_width="wrap_content"

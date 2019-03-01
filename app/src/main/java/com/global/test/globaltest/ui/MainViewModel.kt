@@ -39,18 +39,18 @@ class MainViewModel @Inject constructor(
         addReaction(
             dataRepository.fetchPath()
                 .flatMap { fetchCode(it.next_path) }
-                .backgroundSubscribe()
+                .uiSubscribe()
                 .doOnSubscribe { showProgress() }
                 .doOnComplete { hideProgress() }
-                .subscribe({}, { handleError(it) })
+                .delay(if (delay) 2L else 0, TimeUnit.SECONDS, Schedulers.trampoline())
+                .subscribe(
+                    { handleResponse(it) },
+                    { handleError(it) })
         )
     }
 
     private fun fetchCode(nextPath: String?): Observable<CodeData>? {
         return dataRepository.fetchCode(getPath(nextPath))
-            .uiSubscribe()
-            .doOnNext { handleResponse(it) }
-            .delay(if (delay) 3L else 0, TimeUnit.SECONDS, Schedulers.trampoline())
     }
 
     private fun handleResponse(it: CodeData) {

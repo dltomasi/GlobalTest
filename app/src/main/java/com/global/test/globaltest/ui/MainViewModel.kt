@@ -9,8 +9,9 @@ import com.global.test.globaltest.uiSubscribe
 import io.reactivex.schedulers.Schedulers
 import io.reactivex.subjects.BehaviorSubject
 import java.util.concurrent.TimeUnit
+import javax.inject.Inject
 
-class MainViewModel(
+class MainViewModel @Inject constructor(
     private val dataRepository: DataRepository,
     private val localRepository: LocalRepository
 ) : BaseViewModel() {

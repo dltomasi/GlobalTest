@@ -40,13 +40,4 @@ class DataModule(val context: Context) {
         return SharedPreferencesRepository(preferences)
     }
 
-    @Provides
-    @Singleton
-    fun provideMainViewModel(
-        userRepository: DataRepository,
-        localRepository: LocalRepository
-    ) : MainViewModel {
-        return MainViewModel(userRepository, localRepository)
-    }
-
 }

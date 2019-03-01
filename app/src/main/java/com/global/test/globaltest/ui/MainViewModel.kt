@@ -2,10 +2,12 @@ package com.global.test.globaltest.ui
 
 import android.arch.lifecycle.MutableLiveData
 import com.global.test.globaltest.backgroundSubscribe
+import com.global.test.globaltest.model.CodeData
 import com.global.test.globaltest.network.WebClient
 import com.global.test.globaltest.repositories.DataRepository
 import com.global.test.globaltest.repositories.LocalRepository
 import com.global.test.globaltest.uiSubscribe
+import io.reactivex.Observable
 import io.reactivex.schedulers.Schedulers
 import io.reactivex.subjects.BehaviorSubject
 import java.util.concurrent.TimeUnit
@@ -36,35 +38,30 @@ class MainViewModel @Inject constructor(
     fun fetchCode() {
         addReaction(
             dataRepository.fetchPath()
-                .map { fetchCode(it.next_path) }
+                .flatMap { fetchCode(it.next_path) }
                 .backgroundSubscribe()
                 .doOnSubscribe { showProgress() }
-                .subscribe({},
-                    { e -> handleError(e) })
+                .doOnComplete { hideProgress() }
+                .subscribe({}, { handleError(it) })
         )
     }
 
-    private fun fetchCode(nextPath: String?) {
-        if (nextPath != null) {
-            addReaction(
-                dataRepository.fetchCode(getPath(nextPath))
-                    .uiSubscribe()
-                    .delay(if (delay) 3L else 0, TimeUnit.SECONDS, Schedulers.trampoline())
-                    .doOnComplete { hideProgress() }
-                    .subscribe({
-                        if (!it.isSuccess()) {
-                            handleError(it.error!!)
-                            return@subscribe
-                        }
+    private fun fetchCode(nextPath: String?): Observable<CodeData>? {
+        return dataRepository.fetchCode(getPath(nextPath))
+            .uiSubscribe()
+            .doOnNext { handleResponse(it) }
+            .delay(if (delay) 3L else 0, TimeUnit.SECONDS, Schedulers.trampoline())
+    }
 
-                        code.value = it.response_code
-                        timesFetched.value = timesFetched.value?.plus(1)
-                        if (code.value != null) {
-                            localRepository.saveData(timesFetched.value!!, code.value!!)
-                        }
-                    },
-                        { e -> handleError(e) })
-            )
+    private fun handleResponse(it: CodeData) {
+        if (!it.isSuccess()) {
+            handleError(it.error!!)
+            return
+        }
+        code.value = it.response_code
+        timesFetched.value = timesFetched.value?.plus(1)
+        if (code.value != null) {
+            localRepository.saveData(timesFetched.value!!, code.value!!)
         }
     }
 
@@ -80,7 +77,7 @@ class MainViewModel @Inject constructor(
     private fun getPath(path: String?): String? {
         return path?.let {
             if (it.startsWith(WebClient.host)) {
-                    it.substring(WebClient.host.length, it.length)
+                it.substring(WebClient.host.length, it.length)
             } else it
         }
     }

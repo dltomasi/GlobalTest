@@ -1,7 +1,5 @@
 package com.global.test.globaltest.network
 
-import com.global.test.globaltest.network.DataService
-import com.global.test.globaltest.network.WebClient
 import org.junit.Before
 import org.junit.Ignore
 import org.junit.Test
